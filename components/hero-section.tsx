@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 
 export function HeroSection() {
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-background overflow-x-hidden">
+    <section className="w-full py-12  lg:py-32 bg-background overflow-x-hidden md:flex">
       <div className="container px-4 md:px-6">
         <div className="grid gap-12 lg:grid-cols-2 xl:grid-cols-2 items-center">
           {/* Text Section */}
@@ -16,7 +16,7 @@ export function HeroSection() {
                 Access high-quality notes from your professors and peers. Study smarter, not harder.
               </p>
             </div>
-            <div className="flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
+            <div className="flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start md:flex">
               <Link href="/browse">
                 <Button size="lg" className="w-full sm:w-auto">
                   Browse Notes
@@ -31,7 +31,7 @@ export function HeroSection() {
           </div>
 
           {/* Visual Section */}
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-center md:flex">
             <div className="relative h-[300px] w-[300px] sm:h-[400px] sm:w-[400px] lg:h-[500px] lg:w-[500px]">
               <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full opacity-20 blur-3xl"></div>
               <div className="relative h-full w-full bg-white dark:bg-gray-900 rounded-xl shadow-lg overflow-hidden border">

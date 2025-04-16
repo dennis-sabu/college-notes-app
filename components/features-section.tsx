@@ -25,7 +25,7 @@ export function FeaturesSection() {
   ]
 
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-50 dark:bg-gray-900 overflow-x-hidden">
+    <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-50 dark:bg-gray-900 overflow-x-hidden md:flex">
       <div className="container px-4 sm:px-6">
         <div className="flex flex-col items-center justify-center space-y-6 text-center">
           <div className="space-y-3">
@@ -38,7 +38,7 @@ export function FeaturesSection() {
           </div>
         </div>
 
-        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto md:flex">
           {features.map((feature, index) => (
             <div
               key={index}
