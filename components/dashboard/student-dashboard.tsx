@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Search } from "lucide-react"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import { NotesList } from "@/components/notes/notes-list"
-import { getRecentNotes, getPopularNotes } from "@/lib/mock-data"
+import { getRecentNotes, getPopularNotes } from "@/app/actions"
 import type { Note } from "@/types/note"
 
 export function StudentDashboard() {
@@ -18,12 +18,10 @@ export function StudentDashboard() {
   useEffect(() => {
     const fetchNotes = async () => {
       try {
-        // Use mock data instead of Firebase
-        const recentData = getRecentNotes(5)
-        const popularData = getPopularNotes(5)
+        const [recentResult, popularResult] = await Promise.all([getRecentNotes(5), getPopularNotes(5)])
 
-        setRecentNotes(recentData)
-        setPopularNotes(popularData)
+        setRecentNotes(recentResult.notes)
+        setPopularNotes(popularResult.notes)
       } catch (error) {
         console.error("Error fetching notes:", error)
       } finally {

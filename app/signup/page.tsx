@@ -20,21 +20,28 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
-  const { signup } = useAuth()
+  const { signUp } = useAuth()
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
 
     try {
-      await signup(email, password, name, role as "student" | "teacher")
+      const { error } = await signUp(email, password, name, role as "student" | "teacher")
 
-      toast({
-        title: "Account created",
-        description: "Your account has been created successfully.",
-      })
-
-      router.push("/dashboard")
+      if (error) {
+        toast({
+          title: "Signup failed",
+          description: error.message || "Failed to create account. Please try again.",
+          variant: "destructive",
+        })
+      } else {
+        toast({
+          title: "Account created",
+          description: "Your account has been created successfully. Please check your email for verification.",
+        })
+        router.push("/dashboard")
+      }
     } catch (error: any) {
       toast({
         title: "Signup failed",

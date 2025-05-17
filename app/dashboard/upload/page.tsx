@@ -13,9 +13,10 @@ import { useToast } from "@/components/ui/use-toast"
 import { DashboardHeader } from "@/components/dashboard/dashboard-header"
 import { DashboardShell } from "@/components/dashboard/dashboard-shell"
 import { useAuth } from "@/components/auth-provider"
+import { createNote } from "@/app/actions"
 
 export default function UploadNotesPage() {
-  const { user } = useAuth()
+  const { user, userRole } = useAuth()
   const router = useRouter()
   const { toast } = useToast()
 
@@ -44,6 +45,15 @@ export default function UploadNotesPage() {
       return
     }
 
+    if (userRole !== "teacher") {
+      toast({
+        title: "Permission denied",
+        description: "Only teachers can upload notes.",
+        variant: "destructive",
+      })
+      return
+    }
+
     if (!file) {
       toast({
         title: "File required",
@@ -56,15 +66,30 @@ export default function UploadNotesPage() {
     setLoading(true)
 
     try {
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      const formData = new FormData()
+      formData.append("title", title)
+      formData.append("description", description)
+      formData.append("subject", subject)
+      formData.append("semester", semester)
+      formData.append("file", file)
 
-      toast({
-        title: "Upload successful",
-        description: "Your notes have been uploaded successfully.",
-      })
+      const { success, error } = await createNote(formData)
 
-      router.push("/dashboard/uploads")
+      if (success) {
+        toast({
+          title: "Upload successful",
+          description: "Your notes have been uploaded successfully.",
+        })
+        router.push("/dashboard/uploads")
+      } else {
+        toast({
+          title: "Upload failed",
+          description: typeof error === "string"
+            ? error
+            : error?.message || "Failed to upload notes. Please try again.",
+          variant: "destructive",
+        })
+      }
     } catch (error: any) {
       toast({
         title: "Upload failed",

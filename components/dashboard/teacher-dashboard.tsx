@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { FileText, Upload, Clock } from "lucide-react"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import { NotesList } from "@/components/notes/notes-list"
-import { getNotesByTeacher } from "@/lib/mock-data"
+import { getNotesByTeacher } from "@/app/actions"
 import type { Note } from "@/types/note"
 import { useAuth } from "@/components/auth-provider"
 
@@ -26,16 +26,15 @@ export function TeacherDashboard() {
       if (!user) return
 
       try {
-        // Use mock data instead of Firebase
-        const notesData = getNotesByTeacher(user.uid)
-        setNotes(notesData)
+        const { notes } = await getNotesByTeacher(user.id)
+        setNotes(notes)
 
         // Calculate stats
         setStats({
-          totalNotes: notesData.length,
-          totalDownloads: notesData.reduce((acc, note) => acc + (note.downloads || 0), 0),
-          recentUploads: notesData.filter((note) => {
-            const uploadDate = new Date(note.createdAt)
+          totalNotes: notes.length,
+          totalDownloads: notes.reduce((acc, note) => acc + (note.downloads || 0), 0),
+          recentUploads: notes.filter((note) => {
+            const uploadDate = new Date(note.created_at)
             const oneWeekAgo = new Date()
             oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
             return uploadDate >= oneWeekAgo

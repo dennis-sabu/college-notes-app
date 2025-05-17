@@ -17,19 +17,28 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
-  const { login } = useAuth()
+  const { signIn } = useAuth()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
 
     try {
-      await login(email, password)
-      toast({
-        title: "Login successful",
-        description: "You have been logged in successfully.",
-      })
-      router.push("/dashboard")
+      const { error } = await signIn(email, password)
+
+      if (error) {
+        toast({
+          title: "Login failed",
+          description: error.message || "Failed to login. Please try again.",
+          variant: "destructive",
+        })
+      } else {
+        toast({
+          title: "Login successful",
+          description: "You have been logged in successfully.",
+        })
+        router.push("/dashboard")
+      }
     } catch (error: any) {
       toast({
         title: "Login failed",

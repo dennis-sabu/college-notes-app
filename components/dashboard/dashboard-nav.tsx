@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 
 export function DashboardNav() {
   const pathname = usePathname()
-  const { userRole, logout } = useAuth()
+  const { userRole, signOut } = useAuth()
 
   const isTeacher = userRole === "teacher"
 
@@ -60,7 +60,7 @@ export function DashboardNav() {
           </span>
         </Link>
       ))}
-      <Button variant="ghost" className="justify-start px-3 mt-auto" onClick={() => logout()}>
+      <Button variant="ghost" className="justify-start px-3 mt-auto" onClick={() => signOut()}>
         <LogOut className="mr-2 h-4 w-4" />
         <span>Log out</span>
       </Button>

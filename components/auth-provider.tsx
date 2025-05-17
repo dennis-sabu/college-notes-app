@@ -1,33 +1,31 @@
-"use client"
+'use client'
 
 import type React from "react"
 import { createContext, useContext, useState, useEffect } from "react"
-
-// Mock user type to simulate Firebase User
-interface User {
-  uid: string
-  email: string | null
-  displayName: string | null
-}
+import type { Session, User } from "@supabase/supabase-js"
+import { getBrowserClient } from "@/lib/supabase"
+import { useRouter } from "next/navigation"
 
 type UserRole = "student" | "teacher" | null
 
 interface AuthContextType {
   user: User | null
   userRole: UserRole
+  userDetails: { full_name: string | null } | null
   loading: boolean
-  login: (email: string, password: string) => Promise<void>
-  signup: (email: string, password: string, name: string, role: UserRole) => Promise<void>
-  logout: () => Promise<void>
+  signIn: (email: string, password: string) => Promise<{ error: any }>
+  signUp: (email: string, password: string, name: string, role: UserRole) => Promise<{ error: any }>
+  signOut: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   userRole: null,
+  userDetails: null,
   loading: true,
-  login: async () => {},
-  signup: async () => {},
-  logout: async () => {},
+  signIn: async () => ({ error: null }),
+  signUp: async () => ({ error: null }),
+  signOut: async () => {},
 })
 
 export const useAuth = () => useContext(AuthContext)
@@ -35,72 +33,111 @@ export const useAuth = () => useContext(AuthContext)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [userRole, setUserRole] = useState<UserRole>(null)
+  const [userDetails, setUserDetails] = useState<{ full_name: string | null } | null>(null)
   const [loading, setLoading] = useState(true)
+  const [session, setSession] = useState<Session | null>(null)
+  const router = useRouter()
+  const supabase = getBrowserClient()
 
-  // Check for saved user in localStorage on initial load
   useEffect(() => {
-    const savedUser = localStorage.getItem("user")
-    const savedRole = localStorage.getItem("userRole")
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      setSession(session)
+      setUser(session?.user || null)
 
-    if (savedUser) {
-      setUser(JSON.parse(savedUser))
-      setUserRole(savedRole as UserRole)
+      if (session?.user) {
+        const { data, error } = await supabase
+          .from("users")
+          .select("role, full_name")
+          .eq("id", session.user.id)
+          .single()
+
+        if (data) {
+          setUserRole(data.role as UserRole)
+          setUserDetails({ full_name: data.full_name })
+        }
+      } else {
+        setUserRole(null)
+        setUserDetails(null)
+      }
+
+      setLoading(false)
+    })
+
+    const initializeAuth = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+
+      if (session) {
+        setSession(session)
+        setUser(session.user)
+
+        const { data } = await supabase
+          .from("users")
+          .select("role, full_name")
+          .eq("id", session.user.id)
+          .single()
+
+        if (data) {
+          setUserRole(data.role as UserRole)
+          setUserDetails({ full_name: data.full_name })
+        }
+      }
+
+      setLoading(false)
     }
 
-    setLoading(false)
+    initializeAuth()
+
+    return () => {
+      subscription.unsubscribe()
+    }
   }, [])
 
-  // Mock login function
-  const login = async (email: string, password: string) => {
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    // Create mock user
-    const mockUser: User = {
-      uid: `user-${Date.now()}`,
+  const signIn = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({
       email,
-      displayName: email.split("@")[0],
-    }
+      password,
+    })
 
-    // Save to state and localStorage
-    setUser(mockUser)
-    setUserRole("teacher") // Default to teacher for demo
-    localStorage.setItem("user", JSON.stringify(mockUser))
-    localStorage.setItem("userRole", "teacher")
+    return { error }
   }
 
-  // Mock signup function
-  const signup = async (email: string, password: string, name: string, role: UserRole) => {
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    // Create mock user
-    const mockUser: User = {
-      uid: `user-${Date.now()}`,
+  const signUp = async (email: string, password: string, name: string, role: UserRole) => {
+    const { error } = await supabase.auth.signUp({
       email,
-      displayName: name,
-    }
+      password,
+      options: {
+        data: {
+          full_name: name,
+          role: role,
+        },
+      },
+    })
 
-    // Save to state and localStorage
-    setUser(mockUser)
-    setUserRole(role)
-    localStorage.setItem("user", JSON.stringify(mockUser))
-    localStorage.setItem("userRole", role as string)
+    return { error }
   }
 
-  // Mock logout function
-  const logout = async () => {
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 500))
-
-    // Clear state and localStorage
-    setUser(null)
-    setUserRole(null)
-    localStorage.removeItem("user")
-    localStorage.removeItem("userRole")
+  const signOut = async () => {
+    await supabase.auth.signOut()
+    router.push("/")
   }
 
   return (
-    <AuthContext.Provider value={{ user, userRole, loading, login, signup, logout }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider
+      value={{
+        user,
+        userRole,
+        userDetails,
+        loading,
+        signIn,
+        signUp,
+        signOut,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
   )
 }
