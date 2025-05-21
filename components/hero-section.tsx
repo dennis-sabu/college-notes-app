@@ -1,62 +1,55 @@
-import Link from "next/link"
+"use client"
+
+import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { Search } from "lucide-react"
+import { Input } from "@/components/ui/input"
 
-export function HeroSection() {
+export default function HeroSection() {
   return (
-    <section className="w-full py-12 lg:py-32 bg-background overflow-x-hidden">
-      <div className="container px-4 md:px-6">
-        <div className="grid gap-12 lg:grid-cols-2 xl:grid-cols-2 items-center">
-          {/* Text Section */}
-          <div className="flex flex-col justify-center space-y-6 text-center lg:text-left">
-            <div className="space-y-4">
-              <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
-                Share Knowledge, Ace Your Classes
-              </h1>
-              <p className="max-w-[600px] mx-auto lg:mx-0 text-muted-foreground md:text-xl">
-                Access high-quality notes from your professors and peers. Study smarter, not harder.
-              </p>
-            </div>
-            <div className="flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
-              <Link href="/browse">
-                <Button size="lg" className="w-full sm:w-auto">
-                  Browse Notes
-                </Button>
-              </Link>
-              <Link href="/signup">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto">
-                  Create Account
-                </Button>
-              </Link>
-            </div>
+    <section className="py-20">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-500">
+            KTU Engineering Notes
+          </h1>
+          <p className="text-xl mb-8 text-muted-foreground max-w-lg">
+            Access comprehensive study materials for all semesters and branches. Created by students, for students.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Button size="lg" asChild>
+              <Link href="/browse">Browse Notes</Link>
+            </Button>
+            <Button size="lg" variant="outline" asChild>
+              <Link href="/upload">Contribute</Link>
+            </Button>
           </div>
 
-          {/* Visual Section */}
-          <div className="flex items-center justify-center">
-            <div className="relative w-full max-w-[300px] sm:max-w-[400px] lg:max-w-[500px] aspect-square">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full opacity-20 blur-3xl"></div>
-              <div className="relative h-full w-full bg-white dark:bg-gray-900 rounded-xl shadow-lg overflow-hidden border">
-                <div className="p-6 h-full flex flex-col">
-                  <div className="h-8 w-24 bg-gray-200 dark:bg-gray-800 rounded mb-4"></div>
-                  <div className="flex-1 grid grid-cols-2 gap-4">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div
-                        key={i}
-                        className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 flex flex-col"
-                      >
-                        <div className="h-4 w-16 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
-                        <div className="h-4 w-full bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
-                        <div className="h-4 w-3/4 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                        <div className="mt-auto pt-2 flex justify-end">
-                          <div className="h-6 w-16 bg-blue-200 dark:bg-blue-900 rounded"></div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+          <div className="mt-8 relative">
+            <div className="flex">
+              <Input placeholder="Search for subjects, notes, or materials..." className="rounded-r-none h-12 pl-12" />
+              <Button className="rounded-l-none">Search</Button>
             </div>
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
           </div>
-        </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="relative"
+        >
+          <div className="relative z-10">
+            <img src="/home.png?height=400&width=600" alt="Students studying" className="rounded-lg shadow-xl" />
+          </div>
+
+          {/* Decorative elements */}
+          <div className="absolute -top-6 -right-6 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl -z-10" />
+          <div className="absolute -bottom-6 -left-6 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl -z-10" />
+        </motion.div>
       </div>
     </section>
   )

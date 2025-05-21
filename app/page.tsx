@@ -1,124 +1,103 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Label } from "@/components/ui/label"
-import { NotesList } from "@/components/notes/notes-list"
-import { LoadingSpinner } from "@/components/loading-spinner"
-import { searchNotes } from "@/app/actions"
-import type { Note } from "@/types/note"
-import { Search } from "lucide-react"
+import Link from "next/link"
+import { ArrowRight, BookOpen, Upload, Users } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { motion } from "framer-motion"
+import HeroSection from "@/components/hero-section"
+import FeaturedNotes from "@/components/featured-notes"
 
-export default function BrowsePage() {
-  const [notes, setNotes] = useState<Note[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [subjectFilter, setSubjectFilter] = useState("")
-  const [semesterFilter, setSemesterFilter] = useState("")
-
-  useEffect(() => {
-    const fetchNotes = async () => {
-      setLoading(true)
-      const { notes } = await searchNotes(searchQuery, subjectFilter, semesterFilter)
-      setNotes(notes)
-      setLoading(false)
-    }
-
-    // Debounce search
-    const timer = setTimeout(() => {
-      fetchNotes()
-    }, 500)
-
-    return () => clearTimeout(timer)
-  }, [searchQuery, subjectFilter, semesterFilter])
-
-  // Predefined subjects and semesters
-  const subjects = [
-    "Computer Science",
-    "Mathematics",
-    "Physics",
-    "Chemistry",
-    "Biology",
-    "Engineering",
-    "Business",
-    "Economics",
-  ]
-
-  const semesters = ["1st Semester", "2nd Semester", "3rd Semester", "4th Semester", "5th Semester", "6th Semester"]
-
-  if (loading) {
-    return (
-      <div className="container py-10">
-        <div className="flex justify-center">
-          <LoadingSpinner />
-        </div>
-      </div>
-    )
-  }
-
+export default function Home() {
   return (
-    <div className="container py-10">
-      <h1 className="text-3xl font-bold mb-6">Browse Notes</h1>
+    <div className="container mx-auto px-4 py-8">
+      <HeroSection />
 
-      <div className="grid gap-6 mb-8">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search by title, description, or teacher name..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="subject-filter">Filter by Subject</Label>
-            <Select value={subjectFilter} onValueChange={setSubjectFilter}>
-              <SelectTrigger id="subject-filter">
-                <SelectValue placeholder="All Subjects" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Subjects</SelectItem>
-                {subjects.map((subject) => (
-                  <SelectItem key={subject} value={subject}>
-                    {subject}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="semester-filter">Filter by Semester</Label>
-            <Select value={semesterFilter} onValueChange={setSemesterFilter}>
-              <SelectTrigger id="semester-filter">
-                <SelectValue placeholder="All Semesters" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Semesters</SelectItem>
-                {semesters.map((semester) => (
-                  <SelectItem key={semester} value={semester}>
-                    {semester}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </div>
-
-      {notes.length > 0 ? (
-        <NotesList notes={notes} />
-      ) : (
-        <div className="text-center py-12">
-          <h3 className="text-lg font-medium">No notes found</h3>
-          <p className="text-muted-foreground mt-1">
-            Try adjusting your search or filters to find what you're looking for.
+      {/* Features Section */}
+      <section className="my-20">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold mb-4">Everything You Need For Your Studies</h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            Access comprehensive study materials for all KTU engineering branches and semesters in one place.
           </p>
         </div>
-      )}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <FeatureCard
+            icon={<BookOpen className="h-10 w-10" />}
+            title="Comprehensive Notes"
+            description="Access notes for all 8 semesters across all engineering branches under KTU syllabus."
+            link="/browse"
+            linkText="Browse Notes"
+          />
+          <FeatureCard
+            icon={<Upload className="h-10 w-10" />}
+            title="Contribute Materials"
+            description="Share your notes, presentations, and study materials with fellow students."
+            link="/upload"
+            linkText="Upload Notes"
+          />
+          <FeatureCard
+            icon={<Users className="h-10 w-10" />}
+            title="Community Driven"
+            description="Join a community of students and teachers sharing knowledge and resources."
+            link="/about"
+            linkText="Learn More"
+          />
+        </div>
+      </section>
+
+      {/* Featured Notes Section */}
+      <FeaturedNotes />
+
+      {/* CTA Section */}
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="my-20 p-8 md:p-12 rounded-2xl bg-gradient-to-r from-purple-500/10 to-blue-500/10 backdrop-blur-sm border border-white/10"
+      >
+        <div className="text-center">
+          <h2 className="text-3xl font-bold mb-4">Ready to Ace Your Exams?</h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
+            Join thousands of KTU students who are already using College Notes to excel in their studies.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" asChild>
+              <Link href="/browse">Start Browsing</Link>
+            </Button>
+            <Button size="lg" variant="outline" asChild>
+              <Link href="/upload">Contribute Notes</Link>
+            </Button>
+          </div>
+        </div>
+      </motion.section>
     </div>
+  )
+}
+
+function FeatureCard({ icon, title, description, link, linkText }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      whileHover={{ y: -5 }}
+    >
+      <Card className="h-full border border-white/10 bg-white/5 backdrop-blur-sm">
+        <CardHeader>
+          <div className="mb-4 text-primary">{icon}</div>
+          <CardTitle>{title}</CardTitle>
+          <CardDescription>{description}</CardDescription>
+        </CardHeader>
+        <CardFooter>
+          <Button variant="ghost" className="group" asChild>
+            <Link href={link}>
+              {linkText} <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Link>
+          </Button>
+        </CardFooter>
+      </Card>
+    </motion.div>
   )
 }
