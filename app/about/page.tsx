@@ -74,27 +74,17 @@ export default function AboutPage() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="mb-16"
         >
-          <h2 className="text-2xl font-bold mb-6 text-center">Our Team</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <TeamMember
-              name="Rahul Sharma"
+          <h2 className="text-2xl font-bold mb-6 text-center">Me</h2>
+            <div className="flex justify-center">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+              <TeamMember
+              name="Dennis Sabu"
               role="Founder & Developer"
-              branch="Computer Science"
+              branch="Electronics & Computer Engineering"
               image="/placeholder.svg?height=100&width=100"
-            />
-            <TeamMember
-              name="Priya Menon"
-              role="Content Manager"
-              branch="Electronics & Communication"
-              image="/placeholder.svg?height=100&width=100"
-            />
-            <TeamMember
-              name="Arun Kumar"
-              role="Community Lead"
-              branch="Mechanical Engineering"
-              image="/placeholder.svg?height=100&width=100"
-            />
-          </div>
+              />
+            </div>
+            </div>
         </motion.section>
 
         {/* How It Works Section */}
